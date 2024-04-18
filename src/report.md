@@ -67,23 +67,62 @@
 **== Задание ==**
 
 ##### Прочитай конфигурационный файл *nginx.conf* внутри докер контейнера через команду *exec*.
+
+- Читаю файл из контейнера: \
+![container nginx conf](img/part2_nginx_read.png)
+
 ##### Создай на локальной машине файл *nginx.conf*.
 ##### Настрой в нем по пути */status* отдачу страницы статуса сервера **nginx**.
+
+- Создаю файл *nginx.conf* и настраиваю /status: \
+![nginx conf /status](img/part2_nginx_conf.png)
+
 ##### Скопируй созданный файл *nginx.conf* внутрь докер-образа через команду `docker cp`.
 ##### Перезапусти **nginx** внутри докер-образа через команду *exec*.
-##### Проверь, что по адресу *localhost:80/status* отдается страничка со статусом сервера **nginx**.
-##### Экспортируй контейнер в файл *container.tar* через команду *export*.
-##### Останови контейнер.
-##### Удали образ через `docker rmi [image_id|repository]`, не удаляя перед этим контейнеры.
-##### Удали остановленный контейнер.
-##### Импортируй контейнер обратно через команду *import*.
-##### Запусти импортированный контейнер.
+
+- Копирую конфиг на контейнер и перезапускаю nginx: \
+![copy conf and restart nginx](img/part2_nginx_restart.png)
+
 ##### Проверь, что по адресу *localhost:80/status* отдается страничка со статусом сервера **nginx**.
 
-- В отчёт помести скрины:
-  - вызова и вывода всех использованных в этой части задания команд;
-  - содержимое созданного файла *nginx.conf*;
-  - страницы со статусом сервера **nginx** по адресу *localhost:80/status*.
+- Проверяю адрес *localhost:80/status*: \
+![check nginx status](img/part2_nginx_status_check.png)
+
+##### Экспортируй контейнер в файл *container.tar* через команду *export*.
+
+- Экспортирую контейнер: \
+![container export](img/part2_container_export.png)
+
+##### Останови контейнер.
+
+- Останавливаю контейнер: \
+![container stop](img/part2_container_stop.png)
+
+##### Удали образ через `docker rmi [image_id|repository]`, не удаляя перед этим контейнеры.
+
+- Удаляю образ: \
+![image delete](img/part2_nginx_rmi.png)
+
+##### Удали остановленный контейнер.
+
+- Удаляю контейнер: \
+![container delete](img/part2_container_rm.png)
+
+##### Импортируй контейнер обратно через команду *import*.
+
+- Импортирую контейнер: \
+![container import](img/part2_container_import.png)
+
+##### Запусти импортированный контейнер.
+
+- Запускаю импортированный контейнер: \
+![container start](img/part2_imported_container_start.png)
+
+##### Проверь, что по адресу *localhost:80/status* отдается страничка со статусом сервера **nginx**.
+
+- Проверяю статус сервера nginx: \
+![nginx status](img/part2_check_status_after_import.png)
+
 
 ## Part 3. Мини веб-сервер
 
