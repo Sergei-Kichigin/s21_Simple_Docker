@@ -1,9 +1,14 @@
 # Simple Docker
 
-## Part 1. Готовый докер
+## Оглавление
+[Part 1. Готовый докер](#part-1-готовый-докер) \
+[Part 2. Операции с контейнером](#part-2-операции-с-контейнером) \
+[Part 3. Мини веб-сервер](#part-3-мини-веб-сервер) \
+[Part 4. Свой докер](#part-4-свой-докер) \
+[Part 5. Dockle](#part-5-dockle) \
+[Part 6. Базовый Docker Compose](#part-6-базовый-docker-compose)
 
-В качестве конечной цели своей небольшой практики ты сразу выбрал написание докер-образа для собственного веб-сервера, а потому в начале тебе нужно разобраться с уже готовым докер-образом для сервера.
-Твой выбор пал на довольно простой **nginx**.
+## Part 1. Готовый докер
 
 ##### Возьми официальный докер-образ с **nginx** и выкачай его при помощи `docker pull`.
 
@@ -61,10 +66,6 @@
 ![docker restart](img/part1_docker_image_restart.png)
 
 ## Part 2. Операции с контейнером
-
-Докер-образ и контейнер готовы. Теперь можно покопаться в конфигурации **nginx** и отобразить статус страницы.
-
-**== Задание ==**
 
 ##### Прочитай конфигурационный файл *nginx.conf* внутри докер контейнера через команду *exec*.
 
@@ -126,14 +127,77 @@
 
 ## Part 3. Мини веб-сервер
 
-Теперь стоит немного оторваться от докера, чтобы подготовиться к последнему этапу. Время написать свой сервер.
-
-**== Задание ==**
-
 ##### Напиши мини-сервер на **C** и **FastCgi**, который будет возвращать простейшую страничку с надписью `Hello World!`.
+
+- Написал мини-сервер:
+	``` c
+	#include <fcgi_stdio.h>
+	#include <stdio.h>
+
+	int main(void) {
+		while(FCGI_Accept() >= 0) {
+			printf("Content-type: text/html\r\n\r\nHello World!\r\n\r\n");
+		}
+		return 0;
+	}
+	```
+
+- Написал *Makefile* для сборки:
+	``` makefile
+	CC = gcc
+	CFLAGS = -Wall -Werror -Wextra
+	LIBS = -lfcgi
+
+	TARGET = miniserver
+	SRC_FILES = $(TARGET).c
+	OBJ_FILES = $(SRC_FILES:.c=.o)
+
+	all: build
+
+	build: $(OBJ_FILES)
+		$(CC) $(CFLAGS) $< -o $(TARGET) $(LIBS)
+
+	$(OBJ_FILES): $(SRC_FILES)
+		$(CC) $(CFLAGS) -c $< -o $@ $(LIBS)
+
+	clean:
+		rm $(TARGET) *.o
+
+	rebuild: clean build
+
+	.PHONY: all build clean rebuild
+	```
+
 ##### Запусти написанный мини-сервер через *spawn-fcgi* на порту 8080.
 ##### Напиши свой *nginx.conf*, который будет проксировать все запросы с 81 порта на *127.0.0.1:8080*.
 ##### Проверь, что в браузере по *localhost:81* отдается написанная тобой страничка.
+
+- Скачал *nginx* командой: \
+`docker pull nginx`
+
+- Запустил контейнер: \
+`sudo docker run -d -p 81:81 --name part3 nginx` 
+
+- Запускаю интерактивную оболочку внутри контейнера: \
+`sudo docker exec -it part3 bash`
+
+- Устанавливаю на контейнер пакеты для сборки сервера:
+	- `apt update`
+	- `apt install gcc make spawn-fcgi libfcgi-dev`
+
+- Скопировал мини-сервер и конфиг nginx на контейнер: 
+	- `sudo docker cp nginx.conf part3:/etc/nginx/`
+	- `sudo docker cp miniserver/ part3:/home/`
+
+- Собираю сервер: \
+`make`
+
+- Запускаю мини сервер через *spawn-fcgi*: \
+`spawn-fcgi -p 8080 ./miniserver`
+
+- Перезапускаю *nginx* на контейнере: \
+`nginx -s reload`
+
 ##### Положи файл *nginx.conf* по пути *./nginx/nginx.conf* (это понадобится позже).
 
 ## Part 4. Свой докер
