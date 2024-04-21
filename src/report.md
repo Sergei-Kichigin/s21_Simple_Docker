@@ -168,6 +168,46 @@
 	.PHONY: all build clean rebuild
 	```
 
+- Nginx conf: 
+	``` conf
+	user nginx;
+	worker_processes auto;
+
+	error_log  /var/log/nginx/error.log notice;
+	pid        /var/run/nginx.pid;
+
+
+	events {
+			worker_connections 1024;
+	}
+
+
+	http {
+			include      /etc/nginx/mime.types;
+			default_type application/octet-stream;
+
+			log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+												'$status $body_bytes_sent "$http_referer" '
+												'"$http_user_agent" "$http_x_forwarded_for"';
+
+			access_log  /var/log/nginx/access.log  main;
+			sendfile on;
+			keepalive_timeout 65;
+
+			server {
+					listen 81;
+					server_name localhost;
+
+					location / {
+							fastcgi_pass 127.0.0.1:8080;
+					}
+
+			}
+	}
+
+	```
+
+
 ##### Запусти написанный мини-сервер через *spawn-fcgi* на порту 8080.
 ##### Напиши свой *nginx.conf*, который будет проксировать все запросы с 81 порта на *127.0.0.1:8080*.
 ##### Проверь, что в браузере по *localhost:81* отдается написанная тобой страничка.
@@ -176,7 +216,13 @@
 `docker pull nginx`
 
 - Запустил контейнер: \
-`sudo docker run -d -p 81:81 --name part3 nginx` 
+`sudo docker run -d -p 81:81 --name part3 nginx` \
+![container start](img/part3_container_start.png)
+
+- Скопировал мини-сервер и конфиг nginx на контейнер: 
+	- `sudo docker cp nginx.conf part3:/etc/nginx/`
+	- `sudo docker cp miniserver/ part3:/home/` \
+![copy to container](img/part3_copy_to_container.png)
 
 - Запускаю интерактивную оболочку внутри контейнера: \
 `sudo docker exec -it part3 bash`
@@ -185,18 +231,19 @@
 	- `apt update`
 	- `apt install gcc make spawn-fcgi libfcgi-dev`
 
-- Скопировал мини-сервер и конфиг nginx на контейнер: 
-	- `sudo docker cp nginx.conf part3:/etc/nginx/`
-	- `sudo docker cp miniserver/ part3:/home/`
-
 - Собираю сервер: \
-`make`
+`make` \
+![server build](img/part3_build_server.png)
 
 - Запускаю мини сервер через *spawn-fcgi*: \
-`spawn-fcgi -p 8080 ./miniserver`
+`spawn-fcgi -p 8080 ./miniserver` \
+![server start](img/part3_miniserver_start.png)
 
 - Перезапускаю *nginx* на контейнере: \
 `nginx -s reload`
+
+- Проверяю статус сервера, через браузер: \
+![server start](img/part3_miniserver_check_status.png)
 
 ##### Положи файл *nginx.conf* по пути *./nginx/nginx.conf* (это понадобится позже).
 
