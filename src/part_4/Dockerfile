@@ -16,4 +16,3 @@ RUN cd /home/miniserver && \
 
 # Запуск мини сервера и nginx
 CMD spawn-fcgi -p 8080 /home/miniserver/miniserver && nginx -g "daemon off;"
-
