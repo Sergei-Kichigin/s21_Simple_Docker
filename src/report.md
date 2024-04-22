@@ -417,13 +417,13 @@ _**nginx** можно установить внутрь докера самос�
 - Создал для *miniserver* и *nginx_proxy* индивидуальные *nginx.conf*;
 - Расположил в каталогах:
 	``` markdown
-		.part_6
-		├── docker-compose.yml
-		└── nginx
-				├── miniserver
-				│   └── nginx.conf
-				└── nginx_proxy
-						└── nginx.conf
+	.part_6
+	├── docker-compose.yml
+	└── nginx
+		├── miniserver
+		│   └── nginx.conf
+		└── nginx_proxy
+			└── nginx.conf
 	```
 
 - Написал *docker-compose.yml*:
